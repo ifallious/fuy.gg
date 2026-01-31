@@ -23,6 +23,7 @@ import com.wynntils.core.consumers.overlays.OverlayPosition.AnchorSection
 import com.wynntils.core.consumers.overlays.OverlaySize
 import com.wynntils.core.consumers.overlays.RenderState
 import com.wynntils.mc.event.ConnectionEvent.ConnectedEvent
+import com.wynntils.utils.mc.McUtils
 import com.wynntils.utils.render.type.HorizontalAlignment
 import com.wynntils.utils.render.type.VerticalAlignment
 import net.essentuan.esl.other.Base64
@@ -33,7 +34,9 @@ import net.essentuan.esl.reflections.extensions.tags
 import net.essentuan.esl.tuples.numbers.FloatPair
 import net.minecraft.client.DeltaTracker
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.render.state.GuiRenderState
 import net.minecraft.client.renderer.MultiBufferSource
+import org.joml.Matrix3x2fStack
 import kotlin.reflect.KClass
 
 typealias Anchor = OverlayPosition.AnchorSection
@@ -142,39 +145,40 @@ abstract class AbstractOverlay private constructor(
 
     private fun render(
         graphics: GuiGraphics,
-        buffers: MultiBufferSource.BufferSource,
+        guiRenderState: GuiRenderState,
         deltaTracker: DeltaTracker,
         window: Window,
         preview: Boolean
     ) {
         this.guiGraphics = graphics
-        this.pose = graphics.pose()
-        this.buffer = buffers
+        this.matrixStack = graphics.pose()
+        this.guiRenderState = guiRenderState
         this.deltaTracker = deltaTracker
         this.window = window
         this.preview = preview
+        val bufferSource: MultiBufferSource.BufferSource = McUtils.mc().renderBuffers().bufferSource();
 
-        pose.pushPose()
-        pose.translate(renderX, renderY, 0f)
+        matrixStack.pushMatrix()
+        matrixStack.translate(renderX, renderY)
 
         if (render(context))
             @Suppress("UNCHECKED_CAST")
             for (child in this)
                 (child as Renderer<Context>).render(context)
 
-        pose.popPose()
+        matrixStack.popMatrix()
 
         first = elements.isEmpty()
 
-        buffers.endBatch()
+        bufferSource.endBatch()
     }
 
-    override fun render(p0: GuiGraphics, p1: MultiBufferSource, p2: DeltaTracker, p3: Window) {
-        render(p0, p1 as MultiBufferSource.BufferSource, p2, p3, false)
+    override fun render(p0: GuiGraphics, p1: DeltaTracker, p2: Window) {
+        render(p0, p1, p2)
     }
 
-    override fun renderPreview(p0: GuiGraphics, p1: MultiBufferSource, p2: DeltaTracker, p3: Window) =
-        render(p0, p1 as MultiBufferSource.BufferSource, p2, p3, true)
+    override fun renderPreview(p0: GuiGraphics, p2: DeltaTracker, p3: Window) =
+        render(p0,p2,p3)
 
     override fun onConfigUpdate(p0: com.wynntils.core.persisted.config.Config<*>?) = Unit
 
@@ -201,14 +205,15 @@ abstract class AbstractOverlay private constructor(
     }
 
     private lateinit var guiGraphics: GuiGraphics
-    private lateinit var pose: PoseStack
-    private lateinit var buffer: MultiBufferSource.BufferSource
+    private lateinit var matrixStack: Matrix3x2fStack
+    private lateinit var guiRenderState: GuiRenderState
     private lateinit var deltaTracker: DeltaTracker
     private lateinit var window: Window
 
     private val context = Context()
 
-    inner class Context : IContext {
+    inner class Context(
+    ) : IContext {
         val overlay: AbstractOverlay
             get() = this@AbstractOverlay
 
@@ -218,10 +223,10 @@ abstract class AbstractOverlay private constructor(
         override val graphics: GuiGraphics
             get() = guiGraphics
 
-        override val pose: PoseStack
-            get() = this@AbstractOverlay.pose
-        override val buffer: MultiBufferSource.BufferSource
-            get() = this@AbstractOverlay.buffer
+        override val matrixStack: Matrix3x2fStack
+            get() = this@AbstractOverlay.matrixStack
+        override val guiRenderState: GuiRenderState
+            get() = this@AbstractOverlay.guiRenderState
         override val deltaTracker: DeltaTracker
             get() = this@AbstractOverlay.deltaTracker
         override val window: Window

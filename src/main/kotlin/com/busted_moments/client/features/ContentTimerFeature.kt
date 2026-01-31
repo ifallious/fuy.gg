@@ -26,6 +26,7 @@ import com.busted_moments.client.models.content.triggers.Triggers
 import com.busted_moments.client.models.content.types.DungeonType
 import com.busted_moments.client.models.content.types.LegendaryIslandType
 import com.busted_moments.client.models.content.types.RaidType
+import com.mojang.blaze3d.platform.Window
 import com.wynntils.core.text.StyledText
 import com.wynntils.features.overlays.RaidProgressFeature
 import com.wynntils.handlers.chat.ChatHandler
@@ -40,6 +41,8 @@ import net.essentuan.esl.color.Color
 import net.essentuan.esl.time.duration.Duration
 import net.essentuan.esl.time.duration.ms
 import net.minecraft.ChatFormatting
+import net.minecraft.client.DeltaTracker
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.ChatComponent
 import net.minecraft.network.chat.Style
 import net.neoforged.bus.api.EventPriority
