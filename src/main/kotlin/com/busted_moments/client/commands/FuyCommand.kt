@@ -569,7 +569,7 @@ private fun Guild.Member.toText(
             }
 
             +"$uuid".darkGray
-        }).run {
+        })).run {
             if (world != null)
                 onClick(ClickEvent.RunCommand("/switch ${world.name}"))
             else
