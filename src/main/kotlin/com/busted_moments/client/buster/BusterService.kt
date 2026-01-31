@@ -191,7 +191,7 @@ object BusterService : Storage {
 
     @Listener
     private suspend fun Socket.on(packet: ClientboundLoginPacket) {
-        mc().minecraftSessionService.joinServer(
+        mc().services().sessionService.joinServer(
             mc().user.profileId,
             mc().user.accessToken,
             packet.id

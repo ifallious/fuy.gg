@@ -27,7 +27,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.max
@@ -410,13 +410,13 @@ object Text {
         val String.reset: TextPart
             get() = white.apply { isInherited = false }
 
-        fun String.onClick(action: ClickEvent.Action, value: String) =
-            TextPart(this).onClick(action, value)
+        fun String.onClick(event: ClickEvent) =
+            TextPart(this).onClick(event)
 
-        fun <T : Any> String.onHover(action: HoverEvent.Action<T>, value: T): TextPart =
-            TextPart(this).onHover(action, value)
+        fun String.onHover(event: HoverEvent): TextPart =
+            TextPart(this).onHover(event)
 
-        fun String.font(font: ResourceLocation): TextPart =
+        fun String.font(font: Identifier): TextPart =
             TextPart(this).font(font)
 
         fun String.font(font: FontProvider): TextPart =
@@ -472,11 +472,11 @@ object Text {
         val FontGlyph.reset: TextPart
             get() = white.apply { isInherited = false; font = this@reset.font.location }
 
-        fun FontGlyph.onClick(action: ClickEvent.Action, value: String) =
-            TextPart(char.toString()).onClick(action, value).also { it.font = font.location }
+        fun FontGlyph.onClick(event: ClickEvent) =
+            TextPart(char.toString()).onClick(event).also { it.font = font.location }
 
-        fun <T : Any> FontGlyph.onHover(action: HoverEvent.Action<T>, value: T): TextPart =
-            TextPart(char.toString()).onHover(action, value).also { it.font = font.location }
+        fun FontGlyph.onHover(event: HoverEvent): TextPart =
+            TextPart(char.toString()).onHover(event).also { it.font = font.location }
 
         val TextPart.black: TextPart
             get() = apply { this.color = ChatFormatting.BLACK.color!! }
@@ -530,13 +530,13 @@ object Text {
                 data = ChatFormatting.WHITE.color!!.toLong() shl 32
             }
 
-        fun TextPart.onClick(action: ClickEvent.Action, value: String) =
-            also { clickEvent = ClickEvent(action, value) }
+        fun TextPart.onClick(event: ClickEvent) =
+            also { clickEvent = event }
 
-        fun <T : Any> TextPart.onHover(action: HoverEvent.Action<T>, value: T): TextPart =
-            also { hoverEvent = HoverEvent(action, value) }
+        fun TextPart.onHover(event: HoverEvent): TextPart =
+            also { hoverEvent = event }
 
-        fun TextPart.font(font: ResourceLocation): TextPart =
+        fun TextPart.font(font: Identifier): TextPart =
             also { it.font = font }
 
         fun TextPart.font(font: FontProvider): TextPart =

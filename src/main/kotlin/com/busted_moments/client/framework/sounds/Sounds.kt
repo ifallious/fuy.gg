@@ -9,7 +9,7 @@ import net.minecraft.core.Holder
 import net.minecraft.core.Position
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -32,14 +32,14 @@ object Sounds : Collection<SoundEvent> {
         register(location)
     }
 
-    operator fun plusAssign(location: ResourceLocation) {
+    operator fun plusAssign(location: Identifier) {
         register(location)
     }
 
     fun register(location: String): SoundEvent =
-        register(ResourceLocation.parse(location))
+        register(Identifier.parse(location))
 
-    fun register(location: ResourceLocation): SoundEvent =
+    fun register(location: Identifier): SoundEvent =
         lock {
             get(location) ?: Registry.register(
                 BuiltInRegistries.SOUND_EVENT,
@@ -48,11 +48,11 @@ object Sounds : Collection<SoundEvent> {
             )
         }
 
-    operator fun get(location: ResourceLocation) =
-        BuiltInRegistries.SOUND_EVENT[location]?.getOrNull()?.value()
+    operator fun get(location: Identifier) =
+        BuiltInRegistries.SOUND_EVENT[location].getOrNull()?.value()
 
     operator fun get(location: String) =
-        BuiltInRegistries.SOUND_EVENT[ResourceLocation.parse(location)]?.getOrNull()?.value()
+        BuiltInRegistries.SOUND_EVENT[Identifier.parse(location)].getOrNull()?.value()
 
     override fun contains(element: SoundEvent): Boolean =
         BuiltInRegistries.SOUND_EVENT.containsKey(element.location)
