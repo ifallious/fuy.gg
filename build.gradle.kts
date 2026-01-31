@@ -49,7 +49,7 @@ val buster_version: String by project
 val ktor_version: String by project
 
 plugins {
-    id("fabric-loom") version "1.7.4"
+    id("net.fabricmc.fabric-loom-remap") version "1.15-SNAPSHOT"
     kotlin("jvm") version "2.0.0"
 
     id("maven-publish")
