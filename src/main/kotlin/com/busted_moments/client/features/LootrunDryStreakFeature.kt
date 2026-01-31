@@ -27,7 +27,10 @@ import com.busted_moments.client.framework.util.Numbers.escapeCommas
 import com.busted_moments.client.framework.util.Numbers.toCommaString
 import com.busted_moments.client.framework.wynntils.Ticks
 import com.busted_moments.client.framework.wynntils.registry
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
 import com.mojang.brigadier.StringReader
+import com.mojang.serialization.JsonOps
 import com.wynntils.core.components.Models
 import com.wynntils.core.text.StyledText
 import com.wynntils.mc.event.PlayerInteractEvent
@@ -44,10 +47,14 @@ import com.wynntils.utils.mc.McUtils.player
 import net.essentuan.esl.json.Json
 import net.essentuan.esl.model.annotations.Ignored
 import net.essentuan.esl.other.Base64
+import net.minecraft.core.HolderLookup
 import net.minecraft.core.component.DataComponents
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtOps
 import net.minecraft.nbt.Tag
 import net.minecraft.nbt.TagParser
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
@@ -55,6 +62,7 @@ import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.monster.Slime
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.component.ItemLore
@@ -62,6 +70,7 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.bus.api.EventPriority
 import net.neoforged.bus.api.ICancellableEvent
 import org.joml.Vector2d
+import java.util.Optional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
@@ -214,27 +223,26 @@ object LootrunDryStreakFeature : Feature() {
 
         for (pull in pulls) {
             val string = pull["item"] as String
-            val tag = TagParser.parseTag(if (string[0] == '{') string else Base64.decode(string))
-            val item = ItemStack.parse(mc().registry, tag).getOrNull() ?: continue
-            val display = tag.getCompound("tag").getCompound("display")
+            val tag = TagParser.parseCompoundFully(if (string[0] == '{') string else Base64.decode(string))
+            val item = parseItemStack(mc().registry, tag).getOrNull() ?: continue
+            val display = tag.getCompoundOrEmpty("tag").getCompound("display").getOrNull() ?: continue
 
             item.set(
                 DataComponents.LORE,
                 ItemLore(
                     display
-                        .getList("Lore", 8)
-                        .asSequence()
-                        .map<Tag, Component?> {
-                            Component.Serializer.fromJson(StringReader(it.toString()).readString(), mc().registry)
-                        }.filterNotNull()
-                        .toMutableList()
+                        .getList("Lore").getOrNull()
+                        ?.asSequence()
+                        ?.map<Tag, Component?> {
+                            serializeFromJson(StringReader(it.toString()).readString()).getOrNull()
+                        }?.filterNotNull()
+                        ?.toMutableList()
                 )
             )
 
             item.set(
                 DataComponents.CUSTOM_NAME,
-                Component.Serializer.fromJson(StringReader(display["Name"]!!.toString()).readString(), mc().registry)
-                    ?: continue
+                serializeFromJson(StringReader(display["Name"]!!.toString()).readString()).getOrNull() ?: continue
             )
 
             items += RewardPull(
@@ -246,6 +254,16 @@ object LootrunDryStreakFeature : Feature() {
         dry = drystreakFeature?.getLong("pullssincelastmythic")?.toInt() ?: 0
     }
 
+    fun parseItemStack(lookupProvider: HolderLookup.Provider, tag: Tag): Optional<ItemStack> {
+        return ItemStack.CODEC.parse(
+            lookupProvider.createSerializationContext(NbtOps.INSTANCE),
+            tag
+        ).resultOrPartial()
+    }
+
+    fun serializeFromJson(input: String): Optional<Component> {
+        return ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(input)).result()
+    }
     private fun reset() {
         if (chest != null && dry != 0)
             FUY_PREFIX {
