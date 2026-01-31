@@ -24,7 +24,7 @@ object PersistStreamFeature : Feature() {
     private var toggled: Boolean = false
 
     override fun onEnable() {
-        if (toggled && !Models.WorldState.isInStream)
+        if (toggled && !Models.StreamerMode.isInStream)
             mc().connection!!.sendCommand("stream")
     }
 
