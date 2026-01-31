@@ -17,7 +17,7 @@ import com.essentuan.acf.core.annotations.Subcommand
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.HoverEvent
-import net.minecraft.network.chat.HoverEvent.ItemStackInfo
+//import net.minecraft.network.chat.HoverEvent.ShowItem
 import kotlin.math.ceil
 import kotlin.math.max
 
@@ -81,8 +81,7 @@ private fun CommandContext<*>.pullsPage(
 
                         for (part in name) {
                             +TextPart(part).underline.onHover(
-                                HoverEvent.Action.SHOW_ITEM,
-                                ItemStackInfo(it.item)
+                                HoverEvent.ShowItem(it.item)
                             )
                         }
                     }
@@ -106,7 +105,7 @@ private fun CommandContext<*>.pullsPage(
 
             +"⋘".let {
                 if (page > 0)
-                    it.white.onClick(ClickEvent.Action.RUN_COMMAND, "/drystreak pulls page ${page - 1}")
+                    it.white.onClick(ClickEvent.RunCommand("/drystreak pulls page ${page - 1}"))
                 else
                     it.darkGray.strikethrough
             }
@@ -119,7 +118,7 @@ private fun CommandContext<*>.pullsPage(
 
             +"⋙".let {
                 if (page < (pages - 1))
-                    it.white.onClick(ClickEvent.Action.RUN_COMMAND, "/drystreak pulls page ${page + 1}")
+                    it.white.onClick(ClickEvent.RunCommand("/drystreak pulls page ${page + 1}"))
                 else
                     it.darkGray.strikethrough
             }

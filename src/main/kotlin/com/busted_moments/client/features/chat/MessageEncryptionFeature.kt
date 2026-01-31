@@ -280,8 +280,7 @@ object MessageEncryptionFeature : Feature() {
                         part.partStyle.style
                             .withUnderlined(true)
                             .withHoverEvent(
-                                HoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT,
+                                HoverEvent.ShowText(
                                     Text.component {
                                         +"This was an encrypted message".gray
                                     }
@@ -301,8 +300,7 @@ object MessageEncryptionFeature : Feature() {
                                 .withColor(ChatFormatting.RED)
                                 .withUnderlined(true)
                                 .withHoverEvent(
-                                    HoverEvent(
-                                        HoverEvent.Action.SHOW_TEXT,
+                                    HoverEvent.ShowText(
                                         Text.component {
                                             +"Could not decrypt '".gray
                                             +part.component

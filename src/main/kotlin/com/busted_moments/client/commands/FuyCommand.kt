@@ -409,12 +409,10 @@ private fun CommandContext<*>.warDetails(
                 center {
                     +"${if (damaged) "Initial " else ""}Tower Stats: ".reset.lightPurple
                         .onClick(
-                            ClickEvent.Action.COPY_TO_CLIPBOARD,
-                            Text { war.initial.appendTo(this) }.stringWithoutFormatting
+                            ClickEvent.CopyToClipboard(Text { war.initial.appendTo(this) }.stringWithoutFormatting)
                         )
                         .onHover(
-                            HoverEvent.Action.SHOW_TEXT,
-                            Text.component("Click to copy ${if (damaged) "initial " else ""}tower stats")
+                            HoverEvent.ShowText(Text.component("Click to copy ${if (damaged) "initial " else ""}tower stats"))
                         )
 
                     war.initial.appendTo(this)
@@ -428,12 +426,10 @@ private fun CommandContext<*>.warDetails(
                     center {
                         +"Final Tower Stats: ".reset.lightPurple
                             .onClick(
-                                ClickEvent.Action.COPY_TO_CLIPBOARD,
-                                Text { final.appendTo(this) }.stringWithoutFormatting
+                                ClickEvent.CopyToClipboard(Text { final.appendTo(this) }.stringWithoutFormatting)
                             )
                             .onHover(
-                                HoverEvent.Action.SHOW_TEXT,
-                                Text.component("Click to copy final tower stats")
+                                HoverEvent.ShowText(Text.component("Click to copy final tower stats"))
                             )
 
                         final.appendTo(this)
@@ -453,7 +449,7 @@ private fun CommandContext<*>.warDetails(
 
 
             if (hasPrevious) {
-                +"⋘".white.onClick(ClickEvent.Action.RUN_COMMAND, "/fuy wars details page ${page - 1} $filter")
+                +"⋘".white.onClick(ClickEvent.RunCommand("/fuy wars details page ${page - 1} $filter"))
             } else {
                 +"⋘".darkGray.strikethrough
             }
@@ -466,7 +462,7 @@ private fun CommandContext<*>.warDetails(
             +"   ".reset
 
             if (hasNext) {
-                +"⋙".white.onClick(ClickEvent.Action.RUN_COMMAND, "/fuy wars details page ${page + 1} $filter")
+                +"⋙".white.onClick(ClickEvent.RunCommand("/fuy wars details page ${page + 1} $filter"))
             } else {
                 +"⋙".darkGray.strikethrough
             }
@@ -493,7 +489,7 @@ private fun Guild.Member.toText(
             }
         } else null
 
-        +name.aqua.onHover(HoverEvent.Action.SHOW_TEXT, Text.component {
+        +name.aqua.onHover(HoverEvent.ShowText(Text.component {
             +name.gray
 
             if (previous != null || world != null) {
@@ -575,7 +571,7 @@ private fun Guild.Member.toText(
             +"$uuid".darkGray
         }).run {
             if (world != null)
-                onClick(ClickEvent.Action.RUN_COMMAND, "/switch ${world.name}")
+                onClick(ClickEvent.RunCommand("/switch ${world.name}"))
             else
                 this
         }

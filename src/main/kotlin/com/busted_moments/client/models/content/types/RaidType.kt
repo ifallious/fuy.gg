@@ -278,12 +278,9 @@ enum class RaidType(
         @Subscribe
         private fun ChatMessageEvent.Match.on() {
             message.unwrap().iterate { part, out ->
-                val hoverEvent = part.partStyle.hoverEvent ?: return@iterate IterationDecision.CONTINUE
-
-                if (hoverEvent.action != HoverEvent.Action.SHOW_TEXT)
-                    return@iterate IterationDecision.CONTINUE
-
-                val matcher = StyledText.fromComponent(hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT))
+                val hoverEvent = part.partStyle.hoverEvent as? HoverEvent.ShowText ?: return@iterate IterationDecision.CONTINUE
+ 
+                val matcher = StyledText.fromComponent(hoverEvent.value)
                     .split("\n")
                     .asSequence()
                     .map { it.getMatcher(StyledTextUtils.NICKNAME_PATTERN) }

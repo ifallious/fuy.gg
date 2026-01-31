@@ -236,8 +236,8 @@ object PartyModel : Party {
     private fun username(text: StyledText, default: String): String =
         text.asSequence()
             .map { it.partStyle.hoverEvent }
-            .filter { it != null && it.action == HoverEvent.Action.SHOW_TEXT }
-            .flatMap { StyledText.fromComponent(it.getValue(HoverEvent.Action.SHOW_TEXT)).split("\n").asSequence() }
+            .filterIsInstance<HoverEvent.ShowText>()
+            .flatMap { StyledText.fromComponent(it.value).split("\n").asSequence() }
             .map {
                 val matcher = it.getMatcher(StyledTextUtils.NICKNAME_PATTERN)
                 if (matcher.matches()) matcher.group("username") else null

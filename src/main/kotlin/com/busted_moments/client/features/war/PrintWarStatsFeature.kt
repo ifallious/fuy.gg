@@ -28,27 +28,25 @@ object PrintWarStatsFeature : Feature() {
             val didDamage = war.tower.initial != war.tower.stats
 
             +"Time in War: ".lightPurple
-                .onClick(ClickEvent.Action.COPY_TO_CLIPBOARD, timeInWar)
-                .onHover(HoverEvent.Action.SHOW_TEXT, Text.component("Click to copy war duration"))
+                .onClick(ClickEvent.CopyToClipboard(timeInWar))
+                .onHover(HoverEvent.ShowText(Text.component("Click to copy war duration")))
             +timeInWar.aqua
 
             newLine()
 
             +"Average DPS: ".reset.lightPurple
-                .onClick(ClickEvent.Action.COPY_TO_CLIPBOARD, dps)
-                .onHover(HoverEvent.Action.SHOW_TEXT, Text.component("Click to copy DPS"))
+                .onClick(ClickEvent.CopyToClipboard(dps))
+                .onHover(HoverEvent.ShowText(Text.component("Click to copy DPS")))
             +dps.aqua
 
             newLine()
 
             +"${if (didDamage) "Initial " else ""}Tower Stats: ".reset.lightPurple
                 .onClick(
-                    ClickEvent.Action.COPY_TO_CLIPBOARD,
-                    Text { war.tower.initial.appendTo(this) }.stringWithoutFormatting
+                    ClickEvent.CopyToClipboard(Text { war.tower.initial.appendTo(this) }.stringWithoutFormatting)
                 )
                 .onHover(
-                    HoverEvent.Action.SHOW_TEXT,
-                    Text.component("Click to copy ${if (didDamage) "initial " else ""}tower stats")
+                    HoverEvent.ShowText(Text.component("Click to copy ${if (didDamage) "initial " else ""}tower stats"))
                 )
 
             war.tower.initial.appendTo(this)
@@ -60,12 +58,10 @@ object PrintWarStatsFeature : Feature() {
 
                 +"Final Tower Stats: ".reset.lightPurple
                     .onClick(
-                        ClickEvent.Action.COPY_TO_CLIPBOARD,
-                        Text { final.appendTo(this) }.stringWithoutFormatting
+                        ClickEvent.CopyToClipboard(Text { final.appendTo(this) }.stringWithoutFormatting)
                     )
                     .onHover(
-                        HoverEvent.Action.SHOW_TEXT,
-                        Text.component("Click to copy final tower stats")
+                        HoverEvent.ShowText(Text.component("Click to copy final tower stats"))
                     )
 
                 final.appendTo(this)

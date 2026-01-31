@@ -49,7 +49,6 @@ import net.minecraft.nbt.Tag
 import net.minecraft.nbt.TagParser
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
-import net.minecraft.network.chat.HoverEvent.ItemStackInfo
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Display
@@ -176,8 +175,7 @@ object LootrunDryStreakFeature : Feature() {
 
                             for (part in name) {
                                 +TextPart(part).underline.onHover(
-                                    HoverEvent.Action.SHOW_ITEM,
-                                    ItemStackInfo(entity.item)
+                                    HoverEvent.ShowItem(entity.item)
                                 )
                             }
 

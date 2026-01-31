@@ -33,7 +33,7 @@ object ClickToCongratulateFeature : Feature() {
                     +it
                     newLine()
 
-                    +"Click to congratulate ".aqua.underline.onClick(ClickEvent.Action.RUN_COMMAND, "/msg $player ${this@ClickToCongratulateFeature.message}")
+                    +"Click to congratulate ".aqua.underline.onClick(ClickEvent.RunCommand("/msg $player ${this@ClickToCongratulateFeature.message}"))
                     +player!!
                     +"!"
                 }
