@@ -41,11 +41,11 @@ import com.wynntils.models.territories.TerritoryInfo
 import com.wynntils.models.territories.type.GuildResourceValues
 import com.wynntils.screens.maps.GuildMapScreen
 import com.wynntils.services.map.pois.TerritoryPoi
-import com.wynntils.services.map.type.TerritoryDefenseFilterType
+import com.wynntils.services.map.type.TerritoryFilterType
 import com.wynntils.utils.colors.CommonColors
 import com.wynntils.utils.colors.CustomColor
 import com.wynntils.utils.render.MapRenderer
-import com.wynntils.utils.render.buffered.BufferedRenderUtils
+import com.wynntils.utils.render.RenderUtils
 import com.wynntils.utils.type.CappedValue
 import me.shedaniel.clothconfig2.impl.EasingMethod
 import net.essentuan.esl.collections.builders.mutableMap
@@ -58,6 +58,7 @@ import net.essentuan.esl.time.duration.ms
 import net.essentuan.esl.time.duration.seconds
 import net.essentuan.esl.time.extensions.timeSince
 import net.essentuan.esl.tuples.numbers.FloatPair
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.MultiBufferSource
 import net.neoforged.bus.api.EventPriority
 import java.util.Optional
@@ -290,26 +291,21 @@ class RenderDetails(
 
     private val centerZ: Float
         get() = center.second
-
-    fun render(poseStack: PoseStack, bufferSource: MultiBufferSource) {
-        BufferedRenderUtils.drawMulticoloredRect(
-            poseStack,
-            bufferSource,
+    fun render(guiGraphics: GuiGraphics) {
+        RenderUtils.drawMulticoloredRect(
+            guiGraphics,
             background.map { it.withAlpha(GuildMapImprovementsFeature.opacity) },
             x,
             z,
-            0f,
             width,
             height
         )
 
-        BufferedRenderUtils.drawMulticoloredRectBorders(
-            poseStack,
-            bufferSource,
+        RenderUtils.drawMulticoloredRectBorders(
+            guiGraphics,
             outline,
             x,
             z,
-            0f,
             width,
             height,
             GuildMapImprovementsFeature.outlineThickness,
@@ -511,7 +507,7 @@ class Link(
         centerZ: Float,
         zoom: Float,
         filterLevel: Int,
-        filterType: TerritoryDefenseFilterType?
+        filterType: TerritoryFilterType
     ) {
         val from = poi
         val to = (Models.Territory as TerritoryModelAccessor).callGetTerritoryPoiFromAdvancement(this.to) ?: return
@@ -519,17 +515,17 @@ class Link(
         when (filterType) {
             null -> Unit
 
-            TerritoryDefenseFilterType.DEFAULT -> {
+            TerritoryFilterType.DEFAULT -> {
                 if (to.territoryInfo.defences.level != filterLevel)
                     return
             }
 
-            TerritoryDefenseFilterType.HIGHER -> {
+            TerritoryFilterType.HIGHER -> {
                 if (to.territoryInfo.defences.level < filterLevel)
                     return
             }
 
-            TerritoryDefenseFilterType.LOWER -> {
+            TerritoryFilterType.LOWER -> {
                 if (to.territoryInfo.defences.level > filterLevel)
                     return
             }

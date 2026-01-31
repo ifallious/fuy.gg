@@ -15,7 +15,7 @@ import com.wynntils.screens.maps.AbstractMapScreen;
 import com.wynntils.screens.maps.GuildMapScreen;
 import com.wynntils.services.map.pois.Poi;
 import com.wynntils.services.map.pois.TerritoryPoi;
-import com.wynntils.services.map.type.TerritoryDefenseFilterType;
+import com.wynntils.services.map.type.TerritoryFilterType;
 import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.render.MapRenderer;
 import com.wynntils.utils.type.BoundingBox;
@@ -46,7 +46,7 @@ public abstract class GuildMapScreenMixin extends AbstractMapScreen implements C
     @Shadow
     private GuildResourceValues territoryDefenseFilterLevel;
     @Shadow
-    private TerritoryDefenseFilterType territoryDefenseFilterType;
+    private TerritoryFilterType territoryDefenseFilterType;
 
     @Unique
     private GuiGraphics guiGraphics;
@@ -67,7 +67,7 @@ public abstract class GuildMapScreenMixin extends AbstractMapScreen implements C
     )
     private void renderPois(
             List<Poi> pois,
-            PoseStack poseStack,
+            GuiGraphics guiGraphics,
             BoundingBox textureBoundingBox,
             float poiScale,
             int mouseX,
@@ -78,7 +78,7 @@ public abstract class GuildMapScreenMixin extends AbstractMapScreen implements C
             return;
 
         hovered = null;
-        this.poseStack = poseStack;
+        this.guiGraphics = guiGraphics;
 
         List<Poi> filteredPois = getRenderedPois(pois, textureBoundingBox, poiScale, mouseX, mouseY);
 
@@ -108,7 +108,7 @@ public abstract class GuildMapScreenMixin extends AbstractMapScreen implements C
                         buster
                 );
 
-                details.render(poseStack, bufferSource);
+                details.render(guiGraphics);
                 territories.add(details);
 
                 for (var connection : buster.getConnections()) {
@@ -122,8 +122,7 @@ public abstract class GuildMapScreenMixin extends AbstractMapScreen implements C
                 float poiRenderZ = MapRenderer.getRenderZ(poi, mapCenterZ, centerZ, zoomRenderScale);
 
                 poi.renderAt(
-                        poseStack,
-                        bufferSource,
+                        guiGraphics,
                         poiRenderX,
                         poiRenderZ,
                         hovered == poi,
@@ -136,7 +135,7 @@ public abstract class GuildMapScreenMixin extends AbstractMapScreen implements C
         }
 
         final int filterLevel;
-        final TerritoryDefenseFilterType filterType;
+        final TerritoryFilterType filterType;
 
         if (territoryDefenseFilterEnabled) {
             filterLevel = territoryDefenseFilterLevel.getLevel();
@@ -211,18 +210,6 @@ public abstract class GuildMapScreenMixin extends AbstractMapScreen implements C
     @Override
     public GuiGraphics getGraphics() {
         return guiGraphics;
-    }
-
-    @NotNull
-    @Override
-    public PoseStack getPose() {
-        return poseStack;
-    }
-
-    @NotNull
-    @Override
-    public MultiBufferSource.BufferSource getBuffer() {
-        return bufferSource;
     }
 
     @Override
