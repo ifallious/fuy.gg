@@ -104,7 +104,7 @@ object AttackTimersFeature : Feature(), Marker.Provider<IconPoi> {
             +RenderMode.DISABLE_CULL
 
             pose.pushPose()
-            pose.translate(-camera.position.x, -camera.position.y, -camera.position.z)
+            pose.translate(-cameraRenderState.pos.x, -cameraRenderState.pos.y, -cameraRenderState.pos.z)
 
             val playerY = GroundModel.height.toFloat() + 1
 
