@@ -1,8 +1,7 @@
 package com.busted_moments.client.framework
 
 import com.busted_moments.client.framework.text.TextPart
-import net.minecraft.resources.ResourceLocation
-
+import net.minecraft.resources.Identifier
 object Fonts {
     object Default : FontProvider("minecraft:default")
     object Pill : FontTransposer(
@@ -53,11 +52,11 @@ object Fonts {
 }
 
 open class FontProvider(
-    val location: ResourceLocation
+    val location: Identifier
 ) {
-    constructor(string: String) : this(ResourceLocation.parse(string))
+    constructor(string: String) : this(Identifier.parse(string))
 
-    constructor(namespace: String, path: String) : this(ResourceLocation.fromNamespaceAndPath(namespace, path))
+    constructor(namespace: String, path: String) : this(Identifier.fromNamespaceAndPath(namespace, path))
 }
 
 data class FontGlyph(
@@ -66,7 +65,7 @@ data class FontGlyph(
 )
 
 abstract class FontTransposer(
-    location: ResourceLocation,
+    location: Identifier,
     vararg strategies: Strategy
 ) : FontProvider(location) {
     private val chars: MutableMap<Int, Char> = mutableMapOf()
@@ -75,7 +74,7 @@ abstract class FontTransposer(
         string: String,
         vararg strategies: Strategy
     ) : this(
-        ResourceLocation.parse(string),
+        Identifier.parse(string),
         *strategies
     )
 
@@ -84,7 +83,7 @@ abstract class FontTransposer(
         path: String,
         vararg strategies: Strategy
     ) : this(
-        ResourceLocation.fromNamespaceAndPath(namespace, path),
+        Identifier.fromNamespaceAndPath(namespace, path),
         *strategies
     )
 
